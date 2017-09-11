@@ -7,16 +7,14 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-def kcVersion = '+'
-
 dependencies {
-    compile group: 'com.github.kunalsheth', name: 'kc', version: kcVersion
+    compile group: 'com.github.kunalsheth', name: 'kc', version: 'bafe5d9dee'
 }
 ```
 
 ### Usage
 - The KC object manages all configuration values.
-- Delegate "static" properties to KC using `kc(default: T)`
+- Delegate "static" properties to KC using `kc(default: T)`.
 ```kotlin
 fun main(args: Array<String>) {
     MySingleton.myString = "modification one"
@@ -43,5 +41,5 @@ object MySingleton {
 
 ### Todo List
 - [x] Make it work.
-- [ ] Add "composite type" Stringifiers. (e.g. handle `Pair<A,B>` when `A` and `B` are already registered)
+- [ ] Add "composite type" Stringifiers. (e.g. handle `Pair<A, B>` when `A` and `B` are already registered)
 - [ ] Publish on Maven Central.
