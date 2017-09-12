@@ -31,7 +31,7 @@ class Stringifier<T>(
         }
 
         operator fun <T : Any> get(x: KClass<T>)
-                = stringifiers[x] as Stringifier<T>
+                = (stringifiers[x]?: throw IllegalStateException("Stringifier for ${x.qualifiedName} not found")) as Stringifier<T>
 
         operator fun <T : Any> set(x: KClass<T>, y: Stringifier<T>) {
             stringifiers[x] = y
