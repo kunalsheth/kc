@@ -27,6 +27,12 @@ object KC {
                 data[key1]!![key2]!!.unsafeSet(delegate)
             }
         }
+
+    val types = data.mapValues { (_, map) ->
+        map.mapValues { (_, delegate) ->
+            delegate.type
+        }
+    }
 }
 
 fun <R : Any, T : Any> kc(default: T) = object : DelegateProvider<R, T> {
