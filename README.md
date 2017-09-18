@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.github.kunalsheth', name: 'kc', version: 'bafe5d9dee'
+    compile group: 'com.github.kunalsheth', name: 'kc', version: '80f9c16071'
 }
 ```
 
