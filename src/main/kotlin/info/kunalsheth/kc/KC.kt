@@ -1,57 +1,50 @@
 package info.kunalsheth.kc
 
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
-import kotlin.reflect.jvm.javaGetter
+import kotlin.reflect.jvm.javaField
 
 /**
  * Created by kunal on 9/6/17.
  */
-private typealias Pusher = (String) -> Unit
-private typealias Puller = () -> String
-
 object KC {
-    fun toMap() = pull.mapValues { (_, v) -> v() }
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T : Any> get(key: KProperty<T>)
+            = data[key.key1]!![key.key2]!!.value as T
 
-    operator fun get(key: String) = pull[key]!!()
-    operator fun set(key: String, value: String) = push[key]!!(value)
-
-    inline operator fun <reified T : Any> get(key: KProperty<T>): T
-            = Stringifier[T::class][this[key.qualifiedName]]
-
-    inline operator fun <reified T : Any> set(key: KMutableProperty<T>, value: T) {
-        this[key.qualifiedName] = Stringifier[T::class][value]
+    operator fun <T : Any> set(key: KProperty<T>, value: T) {
+        data[key.key1]!![key.key2]!!.unsafeSet(value)
     }
 
-    private val push = ConcurrentHashMap<String, Pusher>()
-    private val pull = ConcurrentHashMap<String, Puller>()
+    var config
+        get() = data.mapValues { (_, map) ->
+            map.mapValues { (_, delegate) ->
+                delegate.value
+            }
+        }
+        set(value) = value.forEach { key1, map ->
+            map.forEach { key2, delegate ->
+                data[key1]!![key2]!!.unsafeSet(delegate)
+            }
+        }
+}
 
-    fun hook(key: String, pusher: Pusher, puller: Puller) {
-        push += key to pusher
-        pull += key to puller
+fun <R : Any, T : Any> kc(default: T) = object : DelegateProvider<R, T> {
+    override fun provideDelegate(thisRef: R, property: KProperty<*>): KcDelegate<R, T> {
+        val delegate = KcDelegate<R, T>(default)
+
+        data.getOrPut(
+                property.key1,
+                { ConcurrentHashMap() }
+        )[property.key2] = delegate
+
+        return delegate
     }
 }
 
-val KProperty<*>.qualifiedName
-    get() = "${javaGetter!!.declaringClass.kotlin.qualifiedName}.$name"
+private val data = ConcurrentHashMap<String, ConcurrentHashMap<String, KcDelegate<*, *>>>()
 
-inline fun <R, reified T : Any> kc(default: T) = object : DelegateProvider<R, T> {
-
-    override fun provideDelegate(thisRef: R, property: KProperty<*>) = object : ReadWriteProperty<R, T> {
-        init {
-            KC.hook(
-                    property.qualifiedName,
-                    { value = Stringifier[T::class][it] },
-                    { Stringifier[T::class][value] }
-            )
-        }
-
-        var value: T = default
-        override fun getValue(thisRef: R, property: KProperty<*>) = value
-        override fun setValue(thisRef: R, property: KProperty<*>, value: T) {
-            this.value = value
-        }
-    }
-}
+private val KProperty<*>.key1
+    get() = javaField!!.declaringClass.kotlin.qualifiedName!!
+private val KProperty<*>.key2
+    get() = name

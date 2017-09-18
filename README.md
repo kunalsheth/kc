@@ -17,13 +17,10 @@ dependencies {
 - Delegate "static" properties to KC using `kc(default: T)`.
 ```kotlin
 fun main(args: Array<String>) {
-    MySingleton.myString = "modification one"
+    MySingleton.myString = "modified 1"
     assert(MySingleton.myString == KC[MySingleton::myString])
-    
-    KC[MySingleton::myString] = "modification two"
-    assert(MySingleton.myString == KC[MySingleton::myString])
-    
-    KC["info.kunalsheth.kc.MySingleton.myString"] = "modification three"
+
+    KC[MySingleton::myString] = "modified 2"
     assert(MySingleton.myString == KC[MySingleton::myString])
 }
 
@@ -41,5 +38,5 @@ object MySingleton {
 
 ### Todo List
 - [x] Make it work.
-- [ ] Add "composite type" Stringifiers. (e.g. handle `Pair<A, B>` when `A` and `B` are already registered)
+- [ ] Optimize it.
 - [ ] Publish on Maven Central.

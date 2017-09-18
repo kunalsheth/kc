@@ -1,9 +1,13 @@
 package info.kunalsheth.kc
 
+import com.google.gson.GsonBuilder
+
 /**
  * Created by kunal on 9/7/17.
  */
 fun main(args: Array<String>) {
+    MySingleton
+
     println("Startup")
     printAll()
 
@@ -20,15 +24,12 @@ fun main(args: Array<String>) {
     println("""KC[MySingleton::myString] = "modified 2"""")
     assert(MySingleton.myString == KC[MySingleton::myString])
     printAll()
-
-    print("\n\n\n")
-
-    KC["info.kunalsheth.kc.MySingleton.myString"] = "modified 3"
-    println("""KC["info.kunalsheth.kc.MySingleton.myString"] = "modified 3"""")
-    assert(MySingleton.myString == KC[MySingleton::myString])
-    printAll()
 }
 
+
+val gson = GsonBuilder()
+        .setPrettyPrinting()
+        .create()!!
 
 fun printAll() {
     println("""MySingleton:
@@ -44,6 +45,6 @@ fun printAll() {
     println()
 
     println("KC:")
-    KC.toMap().forEach { k, v -> println("\t$k = $v") }
+    println(gson.toJson(KC.config))
     println()
 }
