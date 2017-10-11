@@ -4,11 +4,11 @@ A fast and type-safe configuration library for Kotlin.
 ### Gradle Installation
 ```groovy
 repositories {
-    maven { url 'https://jitpack.io' }
+    maven { url 'http://repo.kunalsheth.info' }
 }
 
 dependencies {
-    compile group: 'com.github.kunalsheth', name: 'kc', version: '80f9c16071'
+    compile group: 'info.kunalsheth.kc', name: 'kc', version: '0.0.1'
 }
 ```
 
